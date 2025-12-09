@@ -1,0 +1,17 @@
+node_modules/
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+dist/
+build/
+src-tauri/target/
+*.egg-info/
+.env
+.env.local
+.idea/
+.vscode/
+*.swp
+*.swo
