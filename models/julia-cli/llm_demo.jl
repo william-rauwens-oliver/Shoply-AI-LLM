@@ -46,20 +46,20 @@ function parse_args()
         elseif arg == "--enable-memory"
             enable_memory = true
         elseif arg == "--help" || arg == "-h"
-            println("""Utilisation:
+            println("""Usage:
   julia llm_demo.jl [options]
 
 Options:
-  --prompt=TEXT          Texte initial
-  --model=ID             Modèle (défaut: gpt2)
-  --max-tokens=N         Max tokens générés (défaut: 60)
-  --temperature=T        Créativité 0.1-2.0 (défaut: 0.8)
-  --mode=single|chat     Mode (défaut: single)
-  --system=TEXT          Instructions système
-  --save-history=FILE    Sauvegarder historique JSON
-  --load-history=FILE    Charger historique JSON
-  --enable-memory        Activer mémoire long-terme
-  --help                 Affiche cette aide
+  --prompt=TEXT          Initial text
+  --model=ID             Model (default: gpt2)
+  --max-tokens=N         Max tokens to generate (default: 60)
+  --temperature=T        Temperature 0.1-2.0 (default: 0.8)
+  --mode=single|chat     Mode (default: single)
+  --system=TEXT          System instructions
+  --save-history=FILE    Save chat history to JSON
+  --load-history=FILE    Load chat history from JSON
+  --enable-memory        Enable long-term memory
+  --help                 Show this help
             """)
             exit(0)
         end
@@ -70,7 +70,6 @@ Options:
 end
 
 function generate_text(model, tokenizer, text::String, args)
-    """Génère du texte avec timing."""
     try
         start_time = time()
         generated = generate(
@@ -86,50 +85,47 @@ function generate_text(model, tokenizer, text::String, args)
         elapsed = time() - start_time
         return generated, elapsed
     catch e
-        println("❌ Erreur: $e")
+        println("Error: $e")
         return nothing, 0
     end
 end
 
 function single_mode(args, model, tokenizer)
-    """Mode avec un seul prompt."""
-    prompt = isempty(args.prompt) ? "Bonjour, je suis une IA intelligente" : args.prompt
+    prompt = isempty(args.prompt) ? "Hello, I am an AI assistant" : args.prompt
     
-    println("✨ Génération en cours...\n")
+    println("Generating response...\n")
     result, elapsed = generate_text(model, tokenizer, prompt, args)
 
     if !isnothing(result)
-        println("📝 Prompt:")
+        println("Prompt:")
         println(prompt)
-        println("\n🤖 Réponse:")
+        println("\nResponse:")
         println(result)
-        println("\n⏱️  Temps: $(round(elapsed, digits=2))s | Tokens: $(args.max_tokens) | Temp: $(args.temperature)")
+        println("\nTime: $(round(elapsed, digits=2))s | Tokens: $(args.max_tokens) | Temp: $(args.temperature)")
     end
 end
 
 function chat_mode(args, model, tokenizer)
-    """Mode conversation multi-tour avec mémoire."""
     history = String[]
     memory = Dict("topics" => String[], "entities" => String[])
     token_count = 0
     start_time = time()
 
-    # Charger historique si demandé
     if !isempty(args.load_history) && isfile(args.load_history)
         try
             data = JSON.parsefile(args.load_history)
             history = get(data, "history", String[])
             memory = get(data, "memory", memory)
-            println("📂 Historique chargé ($(length(history)) messages)\n")
+            println("History loaded ($(length(history)) messages)\n")
         catch e
-            println("⚠️  Impossible de charger: $e\n")
+            println("Failed to load history: $e\n")
         end
     end
 
-    println("\n💬 Mode conversation (quit=quitter, clear=réinitialiser, mem=mémoire)\n")
+    println("Chat mode (quit=exit, clear=reset, mem=show memory)\n")
 
     while true
-        print("👤 Vous: ")
+        print("You: ")
         user_input = readline()
         
         if user_input == "quit"
@@ -138,45 +134,42 @@ function chat_mode(args, model, tokenizer)
             empty!(history)
             memory = Dict("topics" => String[], "entities" => String[])
             token_count = 0
-            println("🗑️  Historique et mémoire effacés.\n")
+            println("History and memory cleared.\n")
             continue
         elseif user_input == "mem"
             topics = length(memory["topics"]) > 3 ? memory["topics"][end-2:end] : memory["topics"]
-            println("\n💾 Mémoire: Thèmes=$topics\n")
+            println("\nMemory: Topics=$topics\n")
             continue
         elseif isempty(strip(user_input))
             continue
         end
 
-        # Construit contexte
         context_msgs = ""
         if length(history) > 0
             context_msgs = join(history[end-min(2, length(history)-1):end], " ")
         end
         
-        system_prompt = isempty(args.system) ? "Tu es un assistant IA utile." : args.system
+        system_prompt = isempty(args.system) ? "You are a helpful AI assistant." : args.system
         if !isempty(context_msgs) && length(context_msgs) < 200
-            system_prompt *= "\n\nContexte: $context_msgs"
+            system_prompt *= "\n\nContext: $context_msgs"
         end
         
-        prompt = "$system_prompt\n\n👤 Vous: $user_input\n🤖 IA:"
+        prompt = "$system_prompt\n\nConversation:\nYou: $user_input\nAssistant:"
 
         result, elapsed = generate_text(model, tokenizer, prompt, args)
 
         if !isnothing(result)
-            # Extrait réponse
-            response = if occursin("🤖 IA:", result)
-                split(result, "🤖 IA:")[end]
+            response = if occursin("Assistant:", result)
+                split(result, "Assistant:")[end]
             else
                 result
             end
             response = strip(response)[1:min(200, length(strip(response)))]
             
-            println("🤖 IA: $response\n")
+            println("Assistant: $response\n")
             push!(history, user_input)
             push!(history, response)
             
-            # Mémoire
             if args.enable_memory
                 words = split(lowercase("$user_input $response"))
                 for w in words[findall(x -> length(x) > 3, words)]
@@ -187,33 +180,31 @@ function chat_mode(args, model, tokenizer)
             
             token_count += args.max_tokens
         else
-            println("⚠️  Erreur de génération.\n")
+            println("Error generating response.\n")
         end
     end
 
-    # Sauvegarder
     if !isempty(args.save_history)
         try
             open(args.save_history, "w") do f
                 write(f, JSON.json(Dict("history" => history, "memory" => memory)))
             end
-            println("\n💾 Historique sauvegardé dans $(args.save_history)")
+            println("\nHistory saved to $(args.save_history)")
         catch e
-            println("\n⚠️  Impossible de sauvegarder: $e")
+            println("\nFailed to save history: $e")
         end
     end
 
-    # Stats
     total_time = time() - start_time
     n_exchanges = div(length(history), 2)
-    println("\n📊 Stats: $n_exchanges échanges, ~$token_count tokens, $(round(total_time, digits=1))s total")
-    println("🧠 Mémoire: $(length(memory["topics"])) thèmes conservés")
+    println("\nStats: $n_exchanges exchanges, ~$token_count tokens, $(round(total_time, digits=1))s total")
+    println("Memory: $(length(memory["topics"])) topics retained")
 end
 
 function main()
     args = parse_args()
     
-    println("📦 Chargement modèle '$(args.model_id)'...")
+    println("Loading model '$(args.model_id)'...")
     tokenizer = AutoTokenizer(args.model_id)
     config = AutoConfig(args.model_id)
     model = GPT2LMHeadModel(config)

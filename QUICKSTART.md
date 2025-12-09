@@ -1,161 +1,155 @@
-# 🚀 Démarrage rapide - LLM AI Chat App
+# Quick Start - LLM AI Chat App
 
-## 1️⃣ Installation (une seule fois)
+## Installation (one-time setup)
 
 ```bash
-# Naviguer vers le dossier app
-cd /Users/WilliamPro/Downloads/test/llm-app
+# Navigate to app directory
+cd /Users/WilliamPro/Downloads/test/app
 
-# Installer les dépendances Node
+# Install Node dependencies
 npm install
 
-# Installer les dépendances Python
-cd backend
+# Install Python dependencies
+cd server
 pip install -r requirements.txt
 cd ..
 ```
 
-**Durée** : ~5-10 minutes (selon la connexion internet)
+**Duration**: ~5-10 minutes depending on connection speed
 
-## 2️⃣ Lancer l'app
+## Launch the App
 
-### ✨ La plus simple (macOS/Linux) :
+### Recommended (macOS/Linux):
 ```bash
-cd /Users/WilliamPro/Downloads/test/llm-app
-./start.sh
-```
-
-**C'est tout !** L'app s'ouvre automatiquement.
-
----
-
-### 📌 Alternative (2 terminaux) :
-
-**Terminal 1 - Backend LLM** :
-```bash
-cd /Users/WilliamPro/Downloads/test/llm-app/backend
+cd /Users/WilliamPro/Downloads/test/app
 ./run.sh
-# Devrait afficher: ✅ Serveur lancé sur http://localhost:7860
 ```
 
-**Terminal 2 - Interface** :
+The app opens automatically.
+
+---
+
+### Alternative (two terminals):
+
+**Terminal 1 - Backend Server**:
 ```bash
-cd /Users/WilliamPro/Downloads/test/llm-app
+cd /Users/WilliamPro/Downloads/test/app/server
+./run.sh
+# Should display: Server started on http://localhost:7860
+```
+
+**Terminal 2 - Interface**:
+```bash
+cd /Users/WilliamPro/Downloads/test/app
 npm run tauri:dev
-# L'app s'ouvre dans une fenêtre native
+# App opens in native window
 ```
 
 ---
 
-## 3️⃣ Utilisation
+## Usage
 
-1. **Interface apparaît** avec un chat noir/bleu moderne
-2. **Choisissez le modèle** à gauche (tiny-gpt2 par défaut = rapide)
-3. **Tapez votre message** en bas
-4. **Appuyez Entrée** ou cliquez 📤
-5. **L'IA répond** en utilisant votre **M3 Pro Metal GPU** 🍎
-
----
-
-## ⚡ Performance sur M3 Pro
-
-| Modèle | Temps | Utilisation GPU |
-|--------|-------|-----------------|
-| tiny-gpt2 | ⚡ 1-2 sec | 🟢 Très léger |
-| distilgpt2 | ⚡⚡ 2-4 sec | 🟢 Léger |
-| gpt2 | ⚡⚡⚡ 4-8 sec | 🟡 Moyen |
+1. Interface opens with modern dark/blue chat theme
+2. Select model on left (tiny-gpt2 default = fastest)
+3. Type message at bottom
+4. Press Enter or click Send
+5. AI responds using your M3 Pro Metal GPU
 
 ---
 
-## 🛠️ Dépannage
+## Performance on M3 Pro
 
-### ❌ "Le serveur LLM n'est pas accessible"
-✅ **Solution** : Lancez d'abord le backend dans Terminal 1
+| Model | Time | GPU Usage |
+|-------|------|-----------|
+| tiny-gpt2 | 1-2 sec | Very light |
+| distilgpt2 | 2-4 sec | Light |
+| gpt2 | 4-8 sec | Medium |
 
-### ❌ App crashe au démarrage
-✅ **Solution** : 
+---
+
+## Troubleshooting
+
+### "LLM server not accessible"
+**Solution**: Start backend in Terminal 1 first
+
+### App crashes on startup
+**Solution**: 
 ```bash
-# Supprimez et réinstallez les node_modules
 rm -rf node_modules
 npm install
 ```
 
-### ❌ Python n'est pas trouvé
-✅ **Solution** : Installez Python via Homebrew
+### Python not found
+**Solution**: Install via Homebrew
 ```bash
 brew install python
 ```
 
-### ⚠️ Premier chargement lent (normal)
-- Première fois : le modèle se télécharge (~200 MB)
-- Prochaines fois : rapide (modèle en cache)
+### First load is slow (normal)
+- First time: model downloads (~200 MB)
+- Later: cached model loads quickly
 
 ---
 
-## 📂 Structure
+## Directory Structure
 
 ```
-llm-app/
-├── backend/           ← Serveur LLM (FastAPI + PyTorch)
-│   ├── main.py       ← Cœur du serveur
-│   └── run.sh        ← Script lancement
-├── src/              ← Interface (React)
-│   ├── App.jsx       ← Chat UI
-│   └── App.css       ← Styles
-├── start.sh          ← Lancement auto (tout en 1)
-├── README.md         ← Documentation complète
-└── package.json      ← Dépendances Node
-```
-
----
-
-## 🍎 Optimisation Apple Silicon
-
-L'app détecte automatiquement votre M3 Pro et utilise :
-- ✅ **Metal GPU** si disponible (rapide)
-- ✅ **CPU** en fallback (compatible)
-
-Visible dans le backend log :
-```
-🍎 Apple Silicon (Metal) détecté - utilisation du GPU
+app/
+├── server/           <- LLM server (FastAPI + PyTorch)
+│   ├── main.py      <- Server core
+│   └── run.sh       <- Launch script
+├── src/             <- Interface (React)
+│   ├── App.jsx      <- Chat UI
+│   └── App.css      <- Styles
+├── run.sh           <- Auto-launch
+├── README.md        <- Full documentation
+└── package.json     <- Node dependencies
 ```
 
 ---
 
-## 🔧 Commandes utiles
+## Apple Silicon Optimization
+
+App auto-detects M3 Pro and uses:
+- Metal GPU when available (fast)
+- CPU fallback for compatibility
+
+See in backend logs:
+```
+Apple Silicon (Metal) detected - using GPU
+```
+
+---
+
+## Useful Commands
 
 ```bash
-# Développement avec rechargement auto
+# Development with hot reload
 npm run tauri:dev
 
-# Builder l'app native (Mac/Windows)
+# Build native app (Mac/Windows)
 npm run tauri:build
 
-# Vérifier la santé du serveur
+# Check server health
 curl http://localhost:7860/health
 
-# Vider le cache des modèles
+# Clear model cache
 curl -X POST http://localhost:7860/api/clear-cache
 ```
 
 ---
 
-## 📖 Plus d'infos
+## More Information
 
-- **README complet** : `llm-app/README.md`
-- **Code frontend** : `llm-app/src/App.jsx`
-- **Code backend** : `llm-app/backend/main.py`
-
----
-
-## 💡 Conseils
-
-✨ **Pour une meilleure expérience** :
-1. Gardez le backend lancé en arrière-plan
-2. Utilisez `tiny-gpt2` pour tester (très rapide)
-3. Augmentez `Température` pour des réponses plus créatives
-4. Modifiez les "Instructions système" pour personnaliser l'IA
+- **Full README**: `app/README.md`
+- **Frontend code**: `app/src/App.jsx`
+- **Backend code**: `app/server/main.py`
 
 ---
 
-**Bon usage ! 🚀**
+## Tips for Best Experience
+
+1. Keep backend running in background
+2. Use `tiny-gpt2` for testing (very fast)
+3. Increase Temperature for more creative responses
+4. Modify System Instructions to customize AI behavior
