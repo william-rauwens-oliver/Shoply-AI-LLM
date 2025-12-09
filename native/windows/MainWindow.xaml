@@ -1,0 +1,76 @@
+<Window
+    x:Class="LLMChat.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="LLM Chat">
+
+    <Grid ColumnDefinitions="280,*" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <StackPanel Grid.Column="0" Spacing="16" Padding="16" Background="{ThemeResource CardBackgroundFillColorDefault}">
+            <TextBlock Text="Configuration" Style="{ThemeResource HeadlineTextBlockStyle}"/>
+            
+            <StackPanel Spacing="8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondary}" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" CornerRadius="8">
+                <TextBlock Text="Model" FontWeight="SemiBold"/>
+                <ComboBox ItemsSource="{x:Bind _viewModel.Models, Mode=OneWay}" SelectedItem="{x:Bind _viewModel.SelectedModel, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{x:Bind}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Spacing="8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondary}" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" CornerRadius="8">
+                <TextBlock Text="Temperature" FontWeight="SemiBold"/>
+                <Slider Value="{x:Bind _viewModel.Temperature, Mode=TwoWay}" Minimum="0.1" Maximum="2.0" StepFrequency="0.1"/>
+                <TextBlock Text="{x:Bind _viewModel.Temperature, Mode=OneWay, StringFormat='{0:F2}'}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            </StackPanel>
+
+            <StackPanel Spacing="8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondary}" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" CornerRadius="8">
+                <TextBlock Text="System Prompt" FontWeight="SemiBold"/>
+                <TextBox Text="{x:Bind _viewModel.SystemPrompt, Mode=TwoWay}" AcceptsReturn="True" Height="80" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <Button Content="Clear History" Command="{x:Bind _viewModel.ClearHistoryCommand}"/>
+
+            <StackPanel Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondary}" BorderBrush="{ThemeResource DividerStrokeColorDefault}" BorderThickness="1" CornerRadius="8">
+                <TextBlock Text="{x:Bind _viewModel.ServerStatus, Mode=OneWay, StringFormat='Server: {0}'}" FontSize="12"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Padding="16">
+            
+            <StackPanel Orientation="Vertical" Spacing="4" Padding="0,0,0,16">
+                <TextBlock Text="LLM Chat" Style="{ThemeResource TitleTextBlockStyle}"/>
+                <TextBlock Text="Windows Native Application" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            </StackPanel>
+
+            <ScrollView Grid.Row="1" Padding="0,0,16,16">
+                <ItemsControl ItemsSource="{x:Bind _viewModel.Messages, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:ChatMessage">
+                            <StackPanel Margin="0,0,0,12" Spacing="4">
+                                <TextBlock Text="{x:Bind Role}" FontWeight="SemiBold" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}"/>
+                                <Border Background="{x:Bind BackgroundColor}" Padding="12" CornerRadius="8">
+                                    <TextBlock Text="{x:Bind Content}" TextWrapping="Wrap" Foreground="{ThemeResource TextOnAccentFillColorPrimary}"/>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollView>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Spacing="8">
+                <TextBox x:Name="MessageInput" 
+                         PlaceholderText="Type a message..."
+                         Text="{x:Bind _viewModel.InputText, Mode=TwoWay}"
+                         KeyDown="MessageInput_KeyDown"
+                         IsEnabled="{x:Bind _viewModel.IsLoading, Mode=OneWay, Converter={StaticResource InvertBoolConverter}}"/>
+                <Button Click="SendButton_Click" Content="Send" IsEnabled="{x:Bind _viewModel.IsLoading, Mode=OneWay, Converter={StaticResource InvertBoolConverter}}"/>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,74 @@
+{
+  "project": "LLM Chat",
+  "version": "2.0.0",
+  "description": "Complete platform-native LLM chat application",
+  "implementations": {
+    "macos": {
+      "language": "Swift",
+      "framework": "SwiftUI",
+      "runtime": "CoreML",
+      "gpu": "Metal Performance Shaders",
+      "minimumOS": "12.0",
+      "architectures": ["arm64", "x86_64"],
+      "location": "native/macos"
+    },
+    "windows": {
+      "language": "C#",
+      "framework": "WinUI 3",
+      "runtime": "ONNX Runtime",
+      "gpu": "DirectML",
+      "minimumOS": "Windows 10 Build 19041",
+      "architectures": ["x64", "arm64"],
+      "location": "native/windows"
+    },
+    "backend": {
+      "language": "Python",
+      "framework": "FastAPI",
+      "runtime": "PyTorch",
+      "gpu": ["Metal", "CUDA", "CPU"],
+      "pythonVersion": "3.10+",
+      "location": "app/server"
+    },
+    "python_cli": {
+      "language": "Python",
+      "framework": "argparse",
+      "runtime": "PyTorch",
+      "location": "models/python-cli"
+    },
+    "julia_cli": {
+      "language": "Julia",
+      "framework": "Transformers.jl",
+      "runtime": "Julia Language",
+      "location": "models/julia-cli"
+    }
+  },
+  "models": [
+    {
+      "name": "tiny-gpt2",
+      "parameters": "125M",
+      "huggingface": "sshleifer/tiny-gpt2",
+      "speed": "Fastest",
+      "memory": "Low"
+    },
+    {
+      "name": "distilgpt2",
+      "parameters": "82M",
+      "huggingface": "distilgpt2",
+      "speed": "Fast",
+      "memory": "Low"
+    },
+    {
+      "name": "gpt2",
+      "parameters": "124M",
+      "huggingface": "gpt2",
+      "speed": "Moderate",
+      "memory": "Medium"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/william-rauwens-oliver/Shoply-AI-LLM",
+    "owner": "william-rauwens-oliver",
+    "branch": "main",
+    "license": "MIT"
+  }
+}

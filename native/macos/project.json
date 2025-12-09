@@ -1,0 +1,13 @@
+{
+  "name": "LLMChat",
+  "version": "1.0.0",
+  "description": "Native LLM Chat Application for macOS",
+  "platforms": ["macOS"],
+  "minimumDeploymentTarget": "12.0",
+  "architectures": ["arm64", "x86_64"],
+  "metadata": {
+    "bundleIdentifier": "com.williamrauwens.llmchat",
+    "appName": "LLM Chat",
+    "category": "Utilities"
+  }
+}

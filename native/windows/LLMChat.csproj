@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
+    <Nullable>enable</Nullable>
+    <UseWinUI>true</UseWinUI>
+    <RootNamespace>LLMChat</RootNamespace>
+    <AssemblyName>LLMChat</AssemblyName>
+    <Version>1.0.0</Version>
+    <Product>LLM Chat</Product>
+    <Description>Native LLM Chat Application for Windows</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.6" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DesktopExtension Include="App.xaml" />
+  </ItemGroup>
+
+</Project>
